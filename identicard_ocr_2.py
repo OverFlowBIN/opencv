@@ -16,6 +16,13 @@ def resize_image(image, width, height):
     resized_image = cv2.resize(image, (width, height))
     return resized_image
 
+
+# 실제 이미지의 경로로 'your_image_path.jpg'를 대체하세요.
+image_path = './identicard.jpg'
+# image_path = './test.png'
+image = cv2.imread(image_path)
+
+
 def find_and_mask_numbers(image):
 
     resized_image = resize_image(image, 1200, 900)
@@ -23,7 +30,9 @@ def find_and_mask_numbers(image):
 
     # 이미지를 그레이스케일로 변환합니다.
     gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
-    # cv2.imshow('gray', gray)
+    gray = cv2.bilateralFilter(gray, 9, 75, 75)
+    gray = cv2.edgePreservingFilter(gray, flags=1, sigma_s=45, sigma_r=0.2)
+    cv2.imshow('gray', gray)
 
 
     # 노이즈를 감소시키고 윤곽을 감지하기 위해 가우시안 블러를 적용합니다.
@@ -31,17 +40,20 @@ def find_and_mask_numbers(image):
     # cv2.imshow('blurred', blurred)
 
     # Canny를 사용하여 가장자리를 검출합니다.
-    # edges = cv2.Canny(blurred, 50, 400)
-    # cv2.imshow('edges', edges)
+    edges = cv2.Canny(blurred, 75, 200, True)
+    cv2.imshow('edges', edges)
 
 
 
 
     # 가장자리 감지된 이미지에서 윤곽을 찾습니다.
-    contours, _ = cv2.findContours(blurred, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    drawContours = cv2.drawContours(blurred, contours, 0, (255, 0, 0), 3)
+    drawContours = cv2.drawContours(resized_image, contours, -1, (0, 0, 225), 3)
     cv2.imshow('drawContours', drawContours)
+
+    # rect  = cv2.minAreaRect(contours)
+    # cv2.imshow('rect', rect)
 
     arr = [];
 
@@ -143,9 +155,7 @@ def find_and_mask_numbers(image):
 
             # break
 
-# 실제 이미지의 경로로 'your_image_path.jpg'를 대체하세요.
-image_path = './identicard.jpg'
-image = cv2.imread(image_path)
+
 
 
 if image is not None:
