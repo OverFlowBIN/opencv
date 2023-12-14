@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import pytesseract
 from PIL import Image
-from random import random
+# from random import random
 
 def rotate_image(image, angle):
     # 이미지를 지정된 각도로 회전합니다.
@@ -18,7 +18,7 @@ def resize_image(image, width, height):
 
 
 # 실제 이미지의 경로로 'your_image_path.jpg'를 대체하세요.
-image_path = './identicard.jpg'
+image_path = './identicard_3.jpg'
 # image_path = './test.png'
 image = cv2.imread(image_path)
 
@@ -32,7 +32,7 @@ def find_and_mask_numbers(image):
     gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
     gray = cv2.bilateralFilter(gray, 9, 75, 75)
     gray = cv2.edgePreservingFilter(gray, flags=1, sigma_s=45, sigma_r=0.2)
-    cv2.imshow('gray', gray)
+    # cv2.imshow('gray', gray)
 
 
     # 노이즈를 감소시키고 윤곽을 감지하기 위해 가우시안 블러를 적용합니다.
@@ -41,47 +41,68 @@ def find_and_mask_numbers(image):
 
     # Canny를 사용하여 가장자리를 검출합니다.
     edges = cv2.Canny(blurred, 75, 200, True)
-    cv2.imshow('edges', edges)
-
-
-
+    # cv2.imshow('edges', edges)
 
     # 가장자리 감지된 이미지에서 윤곽을 찾습니다.
-    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     drawContours = cv2.drawContours(resized_image, contours, -1, (0, 0, 225), 3)
-    cv2.imshow('drawContours', drawContours)
+    # cv2.imshow('drawContours', drawContours)
+    print('contours_1', len(contours))
+
+    # cnts = imutils.grab_contours(cnts)
+    contours = sorted(contours, key = cv2.contourArea, reverse=True)
+    print('contours_2', len(contours))
+
+    # for i in contours:
+    #     for j in i:
+    #         cv2.circle(resized_image, tuple(j[0]), 1, (255,255,0), -1)
+
+    # cv2.imshow('cv2.circle', resized_image)
+
+    # x, y, w, h = cv2.boundingRect(contours[2])
+
+
+    # rectangle = cv2.rectangle(resized_image, (x,y), (x+w, y+h), (0, 255, 0), 3)
+
+    # cv2.imshow('rectangle', rectangle)
 
     # rect  = cv2.minAreaRect(contours)
     # cv2.imshow('rect', rect)
 
-    arr = [];
+    # ===========================
 
-    for contour in contours:
-        epsilon = 0.02 * cv2.arcLength(contour, True)
-        approx = cv2.approxPolyDP(contour, epsilon, True)
+    # arr = [];
 
-        if len(approx) == 4:
-            x, y, w, h = cv2.boundingRect(contour)
-            arr.append([x, y, w, h])
+    # contours = sorted(contours, key=cv2.contourArea, reverse=True)[:5]
 
-            rectangle = cv2.rectangle(resized_image, (x,y), (x+w, y+h), (255, 0, 0), 3)
-            cv2.imshow('rectangle', rectangle)
-
+    # for contour in contours:
+    #     epsilon = 0.1 * cv2.arcLength(contour, True)
+    #     # print('epsilon', epsilon)
+    #     approx = cv2.approxPolyDP(contour, epsilon, True)
+    #     # print('approx', approx)
 
 
-            # break
+
+    #     if len(approx) == 4:
+    #         x, y, w, h = cv2.boundingRect(contour)
+    #         arr.append([x, y, w, h])
+
+    #         rectangle = cv2.rectangle(resized_image, (x,y), (x+w, y+h), (255, 0, 0), 3)
+    #         cv2.imshow('rectangle', rectangle)
+
+    #         break
 
 
-    print('arr', arr)
+    # print('arr', arr)
 
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
+    # ===========================
 
 
     # drawContours = cv2.drawContours(edges, contours, 0, (255, 0, 0), 3)
-    # cv2.imshow('drawContours', drawContours)
+    # # cv2.imshow('drawContours', drawContours)
 
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
@@ -89,25 +110,53 @@ def find_and_mask_numbers(image):
 
 
     # 면적을 기준으로 윤곽을 내림차순으로 정렬합니다.
-    # contours = sorted(contours, key=cv2.contourArea, reverse=True)
-    # # print('contours', contours)
+    contours = sorted(contours, key=cv2.contourArea, reverse=True)
+    # print('contours', contours)
 
-    # # 윤곽을 반복하여 가장 큰 직사각형 윤곽을 찾습니다 (ID 카드로 가정).
-    # for contour in contours:
-    #     epsilon = 0.02 * cv2.arcLength(contour, True)
-    #     approx = cv2.approxPolyDP(contour, epsilon, True)
-    #     # print('len(approx)', len(approx))
-    #     # print('approx', approx)
+    # 윤곽을 반복하여 가장 큰 직사각형 윤곽을 찾습니다 (ID 카드로 가정).
+    for contour in contours:
+        epsilon = 0.02 * cv2.arcLength(contour, True)
+        approx = cv2.approxPolyDP(contour, epsilon, True)
+        # print('len(approx)', len(approx))
+        print('approx', approx)
 
-    #     x, y, w, h = cv2.boundingRect(contour)
+        # x, y, w, h = cv2.boundingRect(contour)
 
-    #     if len(approx) == 4:
-    #         # 직사각형 윤곽을 찾음 (ID 카드로 가정).
-    #         x, y, w, h = cv2.boundingRect(contour)
-    #         print('x', x)
-    #         print('y', y)
-    #         print('w', w)
-    #         print('h', h)
+        if len(approx) == 4:
+            # 직사각형 윤곽을 찾음 (ID 카드로 가정).
+            x, y, w, h = cv2.boundingRect(contour)
+            print('x', x)
+            print('y', y)
+            print('w', w)
+            print('h', h)
+
+
+            cv2.circle(resized_image, (x, y), 2, (255,255,0), 2)
+            cv2.circle(resized_image, (x + w, y), 2, (255,255,0), 2)
+            cv2.circle(resized_image, (x, y + h), 2, (255,255,0), 2)
+            cv2.circle(resized_image, (x + w, y + h), 2, (255,255,0), 2)
+
+            cv2.imshow('cv2.circle', resized_image)
+
+            # extLeft = tuple(contour[contour[:, :, 0].argmin()][0])
+            # extRight = tuple(contour[contour[:, :, 0].argmax()][0])
+            # extTop = tuple(contour[contour[:, :, 1].argmin()][0])
+            # extBot = tuple(contour[contour[:, :, 1].argmax()][0])
+            # print('extLeft', extLeft)
+            # print('extRight', extRight)
+            # print('extTop', extTop)
+            # print('extBot', extBot)
+
+            # cv2.circle(resized_image, extLeft, 8, (0, 0, 255), -1)
+            # cv2.circle(resized_image, extRight, 8, (0, 255, 0), -1)
+            # cv2.circle(resized_image, extTop, 8, (255, 0, 0), -1)
+            # cv2.circle(resized_image, extBot, 8, (255, 255, 0), -1)
+
+            # cv2.imshow('cv2.circle', resized_image)
+
+
+
+            # break
 
 
             # ID 카드 영역을 수평으로 회전시킵니다.
@@ -154,6 +203,9 @@ def find_and_mask_numbers(image):
             #     print("pytesseract 모듈이 설치되어 있지 않습니다. 'pip install pytesseract'를 사용하여 설치하십시오.")
 
             # break
+
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
 
 
 
