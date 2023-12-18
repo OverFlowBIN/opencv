@@ -120,7 +120,7 @@ def find_and_mask_numbers(image):
         # print('len(approx)', len(approx))
         print('approx', approx)
 
-        # x, y, w, h = cv2.boundingRect(contour)
+        x, y, w, h = cv2.boundingRect(contour)
 
         if len(approx) == 4:
             # 직사각형 윤곽을 찾음 (ID 카드로 가정).
