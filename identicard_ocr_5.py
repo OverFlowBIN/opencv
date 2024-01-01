@@ -29,6 +29,7 @@ def find_and_mask_numbers(image):
 
     # pytesseract를 사용하여 텍스트를 추출합니다.
     text = pytesseract.image_to_string(blurred, config='--psm 6')
+    print(text)
 
     # 감지된 주민등록번호를 마스킹합니다.
     masked_image = resized_image.copy()

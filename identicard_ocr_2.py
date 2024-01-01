@@ -18,7 +18,7 @@ def resize_image(image, width, height):
 
 
 # 실제 이미지의 경로로 'your_image_path.jpg'를 대체하세요.
-image_path = './identicard_3.jpg'
+image_path = './identicard.jpg'
 # image_path = './test.png'
 image = cv2.imread(image_path)
 
@@ -38,6 +38,9 @@ def find_and_mask_numbers(image):
     # 노이즈를 감소시키고 윤곽을 감지하기 위해 가우시안 블러를 적용합니다.
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     # cv2.imshow('blurred', blurred)
+    
+    text = pytesseract.image_to_string(blurred, config='--psm 6')
+    print(text)
 
     # Canny를 사용하여 가장자리를 검출합니다.
     edges = cv2.Canny(blurred, 75, 200, True)
