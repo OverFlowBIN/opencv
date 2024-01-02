@@ -27,7 +27,6 @@ def find_and_mask_numbers(image):
 
     resized_image = resize_image(image, 1200, 900)
 
-
     # 이미지를 그레이스케일로 변환합니다.
     gray = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
     gray = cv2.bilateralFilter(gray, 9, 75, 75)
@@ -102,7 +101,6 @@ def find_and_mask_numbers(image):
     # cv2.destroyAllWindows()
 
     # ===========================
-
 
     # drawContours = cv2.drawContours(edges, contours, 0, (255, 0, 0), 3)
     # # cv2.imshow('drawContours', drawContours)
